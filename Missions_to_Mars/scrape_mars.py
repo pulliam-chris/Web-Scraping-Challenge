@@ -78,11 +78,37 @@ def scrape():
     #Construct Dictionary of Title w/ Paragraph
     #headlines = []
 
-    for i in range(len(newsTitles)):
+    #for i in range(len(newsTitles)):
+    package = {}
+    package['news_title'] = newsTitles[0].text.strip()
+    package['news_p'] = newsParagraphs[0].text.strip()
+    #headlines.append(package)
+    marsinfo = package
+
+
+
+    # Read HTML from website
+    url = "https://space-facts.com/mars/"
+    html = requests.get(url).text
+
+    # Create a Beautiful Soup object
+    soup = bs(html, 'html.parser')
+
+    tableRows = []
+    html = soup.find(id='tablepress-p-mars-no-2')
+    justData = html.find_all('td')
+
+    for r in justData:
+        c1 = r.text
+        tableRows.append(c1)
+
+    for t in range(len(tableRows)-1):
         package = {}
-        package['news_title'] = newsTitles[i].text.strip()
-        package['news_p'] = newsParagraphs[i].text.strip()
-        #headlines.append(package)
-        marsinfo.update(dict(package))
+        if t % 2 == 0:
+            package[tableRows[t]] = tableRows[t+1]
+            #t += 2
+            marsinfo.update(package)
+
+
 
     return marsinfo
