@@ -19,7 +19,7 @@ Use BeautifulSoup &amp; Splinter to scrape the NASA Mars News Site then use Mong
 ![Index.html](https://github.com/pulliam-chris/Web-Scraping-Challenge/blob/main/images/index.JPG "Index.html")
 
 **_Had issues with the Chrome driver particular to flask that I was unable to resolve locally_**
-![Selenium Error](https://github.com/pulliam-chris/Web-Scraping-Challenge/blob/main/images/flask.JPG "Selenium Error")
+![Selenium Error](https://github.com/pulliam-chris/Web-Scraping-Challenge/blob/main/images/selenium.JPG "Selenium Error")
 
 * Flask Live Server - the website functions and attempts the data scrape on the button click.
 ![Flask](https://github.com/pulliam-chris/Web-Scraping-Challenge/blob/main/images/flask.JPG "Flask")
