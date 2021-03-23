@@ -11,7 +11,6 @@ mongo = PyMongo(app)
 # Or set inline
 # mongo = PyMongo(app, uri="mongodb://localhost:27017/mars")
 
-
 @app.route("/")
 def index():
     marsinfo = mongo.db.marsinfo.find_one()
@@ -22,6 +21,7 @@ def index():
 def scraper():
     marsinfo = mongo.db.marsinfo
     mars_data = scrape_mars.scrape()
+    # Insert scraped data
     marsinfo.update({}, mars_data, upsert=True)
     return redirect(url_for('index'), code=302)
 

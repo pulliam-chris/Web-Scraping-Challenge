@@ -1,50 +1,42 @@
-from splinter import Browser
+#from splinter import Browser
 from bs4 import BeautifulSoup as bs
-from webdriver_manager.chrome import ChromeDriverManager
+#from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
 import requests
 import time
 import os
-#import pymongo
-
-# The default port used by MongoDB is 27017
-# https://docs.mongodb.com/manual/reference/default-mongodb-port/
-#conn = 'mongodb://localhost:27017'
-#client = pymongo.MongoClient(conn)
-
-# Define the 'classDB' database in Mongo
-#db = client.marsinfo
-
-#def init_browser():
-    # Replace the path with your actual path to the chromedriver
-    #executable_path = {"executable_path": "C:/Users/mrpar/.wdm/drivers/chromedriver/win32/89.0.4389.23"}
-    #ChromeDriverManager().install()
-    # "C:/Users/mrpar/.wdm/drivers/chromedriver/win32/89.0.4389.23"
-    # "C:/Users/mrpar/Documents/bootcamp/chromedriver/"
-    #return Browser("chrome", **executable_path, headless=True)
 
 def scrape():
 
+    # Singular appended dictionary to be returned at the end of the function
     marsinfo = {}
-    #executable_path = {"executable_path": "C:/Users/mrpar/Documents/bootcamp/chromedriver"}
-    #browser = Browser("chrome", **executable_path, headless=True)
 
-    #base_url = 'https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/index.html'
-    #browser.visit(base_url)
-    #time.sleep(1)
+    # Define the path the selenium driver used instead of splinter (which wouldn't function with flask)
+    executable_path = {"executable_path": "C:/Users/mrpar/.conda/envs/PythonData/Lib/site-packages/selenium/webdriver/common"}
+    browser = webdriver.Chrome('C:\\Users\\mrpar\\Documents\\bootcamp\\chromedriver\\chromedriver.exe')
 
-    #html = browser.html
-    #soup = bs(html, 'html.parser')
-    #image_location = ""
+    # JPL Mars Space Images - Featured Image
+    base_url = 'https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/index.html'
+    browser.get(base_url)
+    time.sleep(1)
 
-    #for i in soup.find_all('img', class_='headerimage fade-in'):
-        #image_location = (i.get('src'))
+    image_location = ""
+    featured_image_url = ""
 
-    #featured_image_url = "https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/" + image_location
+    image_locations = browser.find_elements_by_css_selector('img.headerimage fade-in')
+    for i in image_locations:
+        image_location = (i.get('src'))
 
-    #db.classroom.insert_one({'featured_image_url' : featured_image_url})
+    featured_image_url = "https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/" + image_location
+    
+    # Add to dictionary
+    package = {}
+    package['featured_image_url'] = featured_image_url
+    marsinfo.update(package)
 
-    #marsinfo = {'featured_image_url' : featured_image_url}
-
+    browser.close()
+    
+    # NASA Mars News
     url = "https://mars.nasa.gov/news"
     html = requests.get(url).text
 
@@ -75,18 +67,13 @@ def scrape():
             # Append the text to the list
             newsParagraphs.append(element)
 
-    #Construct Dictionary of Title w/ Paragraph
-    #headlines = []
-
-    #for i in range(len(newsTitles)):
+    # Package the news
     package = {}
     package['news_title'] = newsTitles[0].text.strip()
     package['news_p'] = newsParagraphs[0].text.strip()
-    #headlines.append(package)
     marsinfo = package
 
-
-
+    # Mars Facts
     # Read HTML from website
     url = "https://space-facts.com/mars/"
     html = requests.get(url).text
@@ -109,6 +96,5 @@ def scrape():
             #t += 2
             marsinfo.update(package)
 
-
-
+    # Return compiled dictionary to be loaded into PyMongo
     return marsinfo
